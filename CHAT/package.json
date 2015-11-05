@@ -1,0 +1,15 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "An example chatting app using socket.io",
+  "main": "index.js",
+  "scripts": {
+	"start":"node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sarnendu Mukherjee",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
