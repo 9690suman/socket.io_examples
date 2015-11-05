@@ -4,12 +4,13 @@
   "description": "An example chatting app using socket.io",
   "main": "index.js",
   "scripts": {
-	"start":"node index",
+    "start": "node index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sarnendu Mukherjee",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "socket.io": "^1.3.7"
   }
 }

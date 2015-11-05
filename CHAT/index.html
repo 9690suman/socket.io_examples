@@ -1,22 +1,136 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-    </style>
-  </head>
-  <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
-  </body>
+<head>
+<title>Socket.IO chat</title>
+<style>
+/* * {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font: 13px Helvetica, Arial;
+}
+
+form {
+	background: #000;
+	padding: 3px;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+}
+
+form input {
+	border: 0;
+	padding: 10px;
+	width: 90%;
+	margin-right: .5%;
+}
+
+form button {
+	width: 9%;
+	background: rgb(130, 224, 255);
+	border: none;
+	padding: 10px;
+}*/
+#messages {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#messages li {
+	padding: 5px 10px;
+}
+
+#messages li:nth-child(odd) {
+	background: #eee;
+}
+</style>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+	integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
+	crossorigin="anonymous">
+
+</head>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="//cdn.jsdelivr.net/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
+<script>
+	var socket = io();
+	var nickname = null;
+	$(function(){
+		$('#chatFormId').hide();
+		$('#m').keyup(function(){
+			socket.emit('chat message typing', nickname);
+		});
+	});
+	
+	function submitNickname(e) {
+		nickname = $('#nickname').val();
+		socket.emit('chat message joined', nickname);
+		$('#nicknameFormId').hide();
+		$('#chatFormId').show();
+		e.preventDefault();
+		return false;
+	};
+	function submitForm(e) {
+		var msg = $('#m').val();
+		msg = nickname + ' : ' +msg;
+		socket.emit('chat message',msg );
+		$('#m').val('');
+		e.preventDefault();
+		return false;
+	};
+	function leavePage(){
+		socket.emit('chat message left',nickname);
+	}
+	socket.on('chat message', function(msg) {
+		$('#messages').append($('<li>').text(msg));
+		$('#messagesDivId').scrollTo('max');
+	});
+	
+	socket.on('chat message typing', function(msg) {
+		clearTimeout(timer);
+		$('#whosTypingId').show();
+		$('#whosTypingId').text(msg);
+		var timer = setTimeout(function(){
+			$('#whosTypingId').hide();
+		}, 1000);
+	});
+</script>
+<body onbeforeunload="leavePage()">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-8 text-center" >
+				<div class="row" id="messagesDivId" style="height: 550px; overflow: scroll; padding-bottom: 10px;">
+					<ul id="messages"></ul>
+				</div>
+				<div class="row">
+					<span> &nbsp;</span>
+					<span id="whosTypingId"></span>
+				</div>
+				<div class="row" id="chatFormId">
+					<form action="" onsubmit="submitForm(event)">
+						<input id="m" autocomplete="off" />
+						<button>Send</button>
+					</form>
+				</div>
+				<div class="row" id="nicknameFormId">
+					<form action="" onsubmit="submitNickname(event)">
+						<input id="nickname" autocomplete="off" />
+						<button>Save nickname</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="col-md-4 text-center">
+				<h1>Online Friends</h1>
+			</div>
+		</div>
+	</div>
+
+</body>
 </html>
